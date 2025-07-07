@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'your-dockerhub-username/your-image-name'
-        SONARQUBE_ENV = 'SonarQube' // Name configured in Jenkins
+        DOCKER_IMAGE = 'sujitrepo45/auth-service'
     }
 
     stages {
         stage('Clone') {
             steps {
-                git credentialsId: 'your-cred-id', url: 'https://github.com/your/repo.git'
+                git credentialsId: 'github-cred', url: 'https://github.com/sujit1998/flipkart-platform.git'
             }
         }
 
@@ -19,21 +18,16 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    sh "./mvnw sonar:sonar"
-                }
-            }
-        }
 
         stage('Docker Build & Push') {
             steps {
+                withCredentials([usernamePassword(credentialsID: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]){
                 script {
                     def imageTag = "${DOCKER_IMAGE}:latest"
                     sh "docker build -t ${imageTag} ."
                     sh "docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}"
                     sh "docker push ${imageTag}"
+                }
                 }
             }
         }
