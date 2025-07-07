@@ -13,4 +13,14 @@ public class OrderResource {
     public String printHello(){
         return "Hello world";
     }
+
+    @GetMapping("/user/test")
+    public String userTest() {
+        return "Hello User!";
+    }
+
+    @GetMapping("/admin/test")
+    public String adminTest() {
+        return "Hello Admin!";
+    }
 }

@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'your-dockerhub-username/your-image-name'
+        SONARQUBE_ENV = 'SonarQube' // Name configured in Jenkins
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git credentialsId: 'your-cred-id', url: 'https://github.com/your/repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh "./mvnw sonar:sonar"
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    def imageTag = "${DOCKER_IMAGE}:latest"
+                    sh "docker build -t ${imageTag} ."
+                    sh "docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}"
+                    sh "docker push ${imageTag}"
+                }
+            }
+        }
+    }
+}
