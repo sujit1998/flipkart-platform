@@ -6,9 +6,9 @@ pipeline {
     }
 
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git credentialsId: 'github-cred', url: 'https://github.com/sujit1998/flipkart-platform.git'
+                git branch: "main", credentialsId: 'github-cred', url: 'https://github.com/sujit1998/flipkart-platform.git'
             }
         }
 
