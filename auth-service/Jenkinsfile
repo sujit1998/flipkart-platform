@@ -14,20 +14,24 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                dir('auth-service') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
 
         stage('Docker Build & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsID: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]){
-                script {
-                    def imageTag = "${DOCKER_IMAGE}:latest"
-                    sh "docker build -t ${imageTag} ."
-                    sh "docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}"
-                    sh "docker push ${imageTag}"
-                }
+                dir('auth-service') {
+                    withCredentials([usernamePassword(credentialsID: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]){
+                        script {
+                            def imageTag = "${DOCKER_IMAGE}:latest"
+                            sh "docker build -t ${imageTag} ."
+                            sh "docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}"
+                            sh "docker push ${imageTag}"
+                        }
+                    }
                 }
             }
         }
