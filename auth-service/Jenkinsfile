@@ -24,7 +24,7 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 dir('auth-service') {
-                    withCredentials([usernamePassword(credentialsID: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]){
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]){
                         script {
                             def imageTag = "${DOCKER_IMAGE}:latest"
                             sh "docker build -t ${imageTag} ."
