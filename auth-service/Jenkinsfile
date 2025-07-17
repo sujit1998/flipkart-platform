@@ -22,8 +22,15 @@ pipeline {
                 }
             }
         }
-
-
+        stage('Test Docker Access') {
+            steps {
+                sh '''
+                    whoami
+                    groups
+                    docker info
+                '''
+            }
+        }
         stage('Docker Build & Push') {
             steps {
                 dir('auth-service') {
